@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L2高频场景听写-Day1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        audio {
+            margin-bottom: 20px;
+        }
+        .text-container {
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 200px;
+            white-space: pre-wrap;
+        }
+        .correct-answer {
+            color: green;
+            display: inline-block;
+            padding: 2px 5px;
+            margin-left: 5px;
+        }
+        .incorrect-answer {
+            color: red;
+            display: inline-block;
+            padding: 2px 5px;
+            margin-left: 5px;
+        }
+        input.correct {
+            border-color: green;
+            border-style: solid;
+            border-width: 2px;
+        }
+        input.incorrect {
+            border-color: red;
+            border-style: solid;
+            border-width: 2px;
+        }
+        button {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>L2高频场景听写-Day1</h1>
+    <audio controls>
+        <source src="{{ mp3_url }}" type="audio/mpeg">
+        您的浏览器不支持 audio 元素。
+    </audio>
+
+    <div class="text-container" id="text-container">
+        1. ( blackout ) 
+
+        2. ( armchair ) 
+
+        3. ( mattress ) 
+
+        4. ( lamp ) 
+
+        5. ( cushion ) 
+
+        6. ( confirmation ) 
+
+        7. ( porch ) 
+
+        8. ( conference hall ) 
+
+        9. ( stereo ) 
+
+        10. ( tap ) 
+
+        11. ( oven ) 
+
+        12. ( exit ) 
+
+        13. ( detergent ) 
+
+        14. ( towel ) 
+
+        15. ( conference pack ) 
+
+        16. ( pillow ) 
+
+        17. ( fridge ) 
+
+        18. ( uptown ) 
+
+        19. ( real estate agency ) 
+
+        20. ( invitation ) 
+
+        21. ( toothbrush ) 
+
+        22. ( blanket ) 
+
+        23. ( venue ) 
+
+        24. ( bookcase ) 
+
+        25. ( schedule ) 
+
+        26. ( radiator ) 
+
+        27. ( terraced house ) 
+
+        28. ( real estate agent ) 
+
+        29. ( guesthouse ) 
+
+        30. ( exhibition ) 
+    </div>
+
+    <form method="post" action="/submit_l2day1">
+        <button type="submit">提交</button>
+    </form>
+
+    <script>
+        const correctAnswers = ["blackout", "armchair", "mattress", "lamp", "cushion", "confirmation", "porch", "conference hall", "stereo", "tap", "oven", "exit", "detergent", "towel", "conference pack", "pillow", "fridge", "uptown", "real estate agency", "invitation", "toothbrush", "blanket", "venue", "bookcase", "schedule", "radiator", "terraced house", "real estate agent", "guesthouse", "exhibition"];
+        const answerElements = [];
+        const answerSpans = [];
+
+        // Insert input fields into the text container
+        let textContainer = document.getElementById('text-container');
+        let newTextContent = textContainer.innerHTML.replace(/\(([^)]+)\)/g, (match, p1, offset, string) => {
+            let input = document.createElement("input");
+            input.size = 15;
+            answerElements.push(input);
+
+            let span = document.createElement("span");
+            span.className = "correct-answer";
+            span.style.display = "none"; // Initially hide the correct answer
+            answerSpans.push(span);
+
+            return `${input.outerHTML} ${span.outerHTML}`;
+        });
+        textContainer.innerHTML = newTextContent;
+
+        // Re-query the input elements after setting innerHTML
+        answerElements.length = 0; // Clear the array
+        answerSpans.length = 0; // Clear the array
+        textContainer.querySelectorAll('input').forEach(input => {
+            answerElements.push(input);
+        });
+        textContainer.querySelectorAll('.correct-answer').forEach(span => {
+            answerSpans.push(span);
+        });
+
+        function checkAnswers() {
+            let userAnswers = answerElements.map(input => input.value.toLowerCase().trim());
+
+            console.log("User Answers:", userAnswers); // Debug log
+
+            for (let i = 0; i < userAnswers.length; i++) {
+                if (userAnswers[i] === correctAnswers[i]) {
+                    answerElements[i].classList.add("correct");
+                    answerElements[i].classList.remove("incorrect");
+                } else {
+                    answerElements[i].classList.add("incorrect");
+                    answerElements[i].classList.remove("correct");
+                }
+
+                // Display the correct answer
+                answerSpans[i].textContent = `(${correctAnswers[i]})`;
+                answerSpans[i].style.display = "inline"; // Show the correct answer
+            }
+        }
+
+        // Bind the form submission to checkAnswers function
+        document.querySelector('form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            checkAnswers();
+
+            // Collect user answers and send them via POST request
+            let formData = new FormData();
+            answerElements.forEach((answer, index) => {
+                formData.append(`answer${index}`, answer.value.trim());
+            });
+
+            fetch('/submit_l2day1', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+    <footer>
+        <p>All Rights Reserved by John WM Qiu © 2025</p>
+    </footer>
+</body>
+</html>
+
+
+
